@@ -328,7 +328,7 @@ public class RecipeControllerTest extends BaseTest {
     @Test
     void filterConditionInvalid() {
         var recipesArray = given()
-                .header("Content-type", "application/json")
+                .header(HttpHeaders.CONTENT_TYPE, ContentType.JSON)
                 .when()
                 .get("/v1/recipe?instructionn=1")
                 .then()
@@ -353,7 +353,7 @@ public class RecipeControllerTest extends BaseTest {
 
         recipeRepository.saveAll(List.of(recipeChiliDTO, recipeSaladDTO));
         var recipesArray = given()
-                .header("Content-type", "application/json")
+                .header(HttpHeaders.CONTENT_TYPE, ContentType.JSON)
                 .when()
                 .get("/v1/recipe")
                 .then()
@@ -363,15 +363,5 @@ public class RecipeControllerTest extends BaseTest {
 
         var recipes = Arrays.asList(recipesArray);
         assertThat(recipes.size()).isEqualTo(2);
-    }
-
-    private Recipe getRecipeEntity(String name, String instructions, String category, Integer servings, String[] ingredients) {
-        return Recipe.builder()
-                .name(name)
-                .instructions(instructions)
-                .category(category)
-                .servings(servings)
-                .ingredients(List.of(ingredients))
-                .build();
     }
 }
