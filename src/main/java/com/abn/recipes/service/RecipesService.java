@@ -67,7 +67,7 @@ public class RecipesService {
     public void delete(String id) {
 
         recipeRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Recipe doesn't exist"));
+                .orElseThrow(() -> new ResourceNotFoundException("Recipe with id " + id + " doesn't exist"));
 
         recipeRepository.deleteById(id);
 
@@ -96,7 +96,8 @@ public class RecipesService {
         }
 
         if(!CollectionUtils.isEmpty(criteria)){
-            return mongoTemplate.find(Query.query(new Criteria().andOperator(criteria.toArray(new Criteria[0]))).with(sortByName), Recipe.class);
+            Query query = Query.query(new Criteria().andOperator(criteria.toArray(new Criteria[0]))).with(sortByName);
+            return mongoTemplate.find(query, Recipe.class);
         }
 
         return recipeRepository.findAll(sortByName);

@@ -32,7 +32,7 @@ public class RecipeControllerTest extends BaseTest {
     void create() {
         String[] chiliIngredients = { "100g chorizo , sliced", "400g can kidney beans" };
         var recipeDTO = getRecipeEntity(                "Quick chilli",
-                "instructions Quick chilli", "LOW_CARB", 2,chiliIngredients);
+                "instructions Quick chilli", "VEGETARIAN", 2,chiliIngredients);
 
         given()
                 .body(recipeDTO)
@@ -57,7 +57,7 @@ public class RecipeControllerTest extends BaseTest {
     void createDuplicatedRecipe() {
         String[] chiliIngredients = { "100g chorizo , sliced", "400g can kidney beans" };
         var recipeDTO = getRecipeEntity(                "Quick chilli",
-                "instructions Quick chilli", "LOW_CARB", 2,chiliIngredients);
+                "instructions Quick chilli", "VEGETARIAN", 2,chiliIngredients);
 
         given()
                 .body(recipeDTO)
@@ -90,7 +90,7 @@ public class RecipeControllerTest extends BaseTest {
     void update() {
         String[] chiliIngredients = { "100g chorizo , sliced", "400g can kidney beans" };
         var recipeEntity = getRecipeEntity(                "Quick chilli",
-                "instructions Quick chilli", "LOW_CARB", 2,chiliIngredients);
+                "instructions Quick chilli", "VEGETARIAN", 2,chiliIngredients);
 
         var recipeSaved = recipeRepository.save(recipeEntity);
 
@@ -121,7 +121,7 @@ public class RecipeControllerTest extends BaseTest {
         String[] chiliIngredients = { "100g chorizo , sliced", "400g can kidney beans" };
 
         var recipeDTO = getRecipeEntity(                "Quick chilli",
-                "instructions Quick chilli", "LOW_CARB", 2,chiliIngredients);
+                "instructions Quick chilli", "VEGETARIAN", 2,chiliIngredients);
 
         ErrorResponse errorResponse = given()
                 .body(recipeDTO)
@@ -144,7 +144,7 @@ public class RecipeControllerTest extends BaseTest {
 
         String[] chiliIngredients = { "100g chorizo , sliced", "400g can kidney beans" };
         var recipeChiliDTO = getRecipeEntity("Quick chilli",
-                "instructions Quick chilli", "LOW_CARB", 2,chiliIngredients);
+                "instructions Quick chilli", "VEGETARIAN", 2,chiliIngredients);
 
         recipeRepository.saveAll(List.of(recipeSaladDTO, recipeChiliDTO));
 
@@ -165,7 +165,7 @@ public class RecipeControllerTest extends BaseTest {
     void delete() {
         String[] saladIngredients = { "100g couscous", "2 spring onions", "100ml hot low salt vegetable stock (from a cube is fine)" };
         var recipeSaladDTO = getRecipeEntity("10-minute couscous salad",
-                "instructions 10-minute couscous salad", "LOW_CARB", 2,saladIngredients);
+                "instructions 10-minute couscous salad", "VEGETARIAN", 2,saladIngredients);
 
         var recipeSaved = recipeRepository.save(recipeSaladDTO);
 

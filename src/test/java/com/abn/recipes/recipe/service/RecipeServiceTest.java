@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
 
@@ -82,7 +83,7 @@ public class RecipeServiceTest {
     public void whenUpdateNotFoundRecipe_shouldThrowResourceNotFoundException() {
         String[] chiliIngredients = { "100g chorizo , sliced", "400g can kidney beans" };
         var recipe = getRecipeDTO(                "Quick chilli",
-                "instructions Quick chilli", "LOW_CARB", 2,chiliIngredients);
+                "instructions Quick chilli", "VEGETARIAN", 2,chiliIngredients);
 
         assertThatThrownBy(() -> recipeService.update(ID, recipe))
                 .isInstanceOf(ResourceNotFoundException.class);
@@ -109,7 +110,7 @@ public class RecipeServiceTest {
     public void whenNoFilterConditionsIsPresent_shouldReturnAllRecipes() {
         recipeService.filterCondition(null, null, null, null, null);
 
-        verify(recipeRepository, times(1)).findAll();
+        verify(recipeRepository, times(1)).findAll(any(Sort.class));
     }
 
     @Test
