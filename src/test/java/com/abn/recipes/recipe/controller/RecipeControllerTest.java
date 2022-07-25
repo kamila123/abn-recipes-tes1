@@ -181,6 +181,16 @@ public class RecipeControllerTest extends BaseTest {
     }
 
     @Test
+    void deleteInvalidRecipe() {
+       given()
+                .header(HttpHeaders.CONTENT_TYPE, ContentType.JSON)
+                .when()
+                .delete("/v1/recipe/" + "xpto")
+                .then()
+                .statusCode(404);
+    }
+
+    @Test
     void filterConditionCategory() {
         String[] saladIngredients = { "100g couscous", "2 spring onions", "100ml hot low salt vegetable stock (from a cube is fine)" };
         var recipeSaladDTO = getRecipeEntity("10-minute couscous salad",
