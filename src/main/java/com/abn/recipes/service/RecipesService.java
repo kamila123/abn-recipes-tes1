@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -75,6 +76,8 @@ public class RecipesService {
 
     public List<Recipe> filterCondition(String category, Integer servings, String include, String exclude, String instructions) {
         final List<Criteria> criteria = new ArrayList<>();
+        Sort sortByName = Sort.by(Sort.Direction.ASC, "name");
+
         if (StringUtils.isNotEmpty(include)) {
             criteria.add(where("ingredients").in(include));
         }
@@ -93,10 +96,10 @@ public class RecipesService {
         }
 
         if(!CollectionUtils.isEmpty(criteria)){
-            return mongoTemplate.find(Query.query(new Criteria().andOperator(criteria.toArray(new Criteria[0]))), Recipe.class);
+            return mongoTemplate.find(Query.query(new Criteria().andOperator(criteria.toArray(new Criteria[0]))).with(sortByName), Recipe.class);
         }
 
-        return recipeRepository.findAll();
+        return recipeRepository.findAll(sortByName);
     }
 
 }
