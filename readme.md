@@ -43,7 +43,7 @@ In order to successfully run this sample app you need a few things:
 {
   "name" : "10-minute couscous salad LOW_CARB 2",
   "instructions" : "Tip the couscous into a large bowl and pour over the stock. Cover, then leave for 10 mins until fluffy and all the stock has been absorbed. Meanwhile, slice the onions and pepper, and dice the cucumber. Add these to the couscous, fork through the pesto, crumble in the feta, then sprinkle over pine nuts to serve.",
-  "category" : "LOW_CARB",
+  "category" : "VEGETARIAN",
   "servings" : 5,
   "ingredients" : ["100g couscous", "2 spring onions","200ml hot low salt vegetable stock (from a cube is fine)" , "1 red pepper", "½ cucumber", "50g feta cheese, cubed", "2tbsp pesto", "2tbsp pine nuts"]
 }

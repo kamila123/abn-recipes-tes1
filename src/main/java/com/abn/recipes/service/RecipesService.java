@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
+import java.util.regex.Pattern;
 
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 
@@ -79,7 +80,8 @@ public class RecipesService {
             criteria.add(where("ingredients").not().in(exclude));
         }
         if (StringUtils.isNotEmpty(category)) {
-            criteria.add(where("category").is(category));
+            Pattern pattern = Pattern.compile(category, Pattern.CASE_INSENSITIVE);
+            criteria.add(where("category").regex(pattern));
         }
         if (Objects.nonNull(servings)) {
             criteria.add(where("servings").is(servings));

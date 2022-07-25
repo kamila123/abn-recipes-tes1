@@ -210,6 +210,35 @@ public class RecipeControllerTest extends BaseTest {
     }
 
     @Test
+    void filterConditionCategoryLowerCase() {
+        String[] saladIngredients = { "100g couscous", "2 spring onions", "100ml hot low salt vegetable stock (from a cube is fine)" };
+        var recipeSaladDTO = getRecipeEntity("10-minute couscous salad",
+                "instructions 10-minute couscous salad", "VEGETARIAN", 2,saladIngredients);
+
+        String[] chiliIngredients = { "100g chorizo , sliced", "400g can kidney beans" };
+        var recipeChiliDTO = getRecipeEntity("Quick chilli",
+                "instructions Quick chilli", "LOW_CARB", 2,chiliIngredients);
+
+        recipeRepository.saveAll(List.of(recipeChiliDTO, recipeSaladDTO));
+
+        var recipesArray = given()
+                .header(HttpHeaders.CONTENT_TYPE, ContentType.JSON)
+                .when()
+                .get("/v1/recipe?category=vegetarian")
+                .then()
+                .statusCode(200)
+                .extract()
+                .as(RecipeDTO[].class);
+
+        var recipes = Arrays.asList(recipesArray);
+        assertThat(recipes.size()).isEqualTo(1);
+
+        RecipeDTO recipeFound = recipes.get(0);
+        assertThat(recipeFound.getCategory()).isEqualTo(recipeSaladDTO.getCategory());
+        assertThat(recipeFound.getName()).isEqualTo(recipeSaladDTO.getName());
+    }
+
+    @Test
     void filterConditionInstructions() {
         String[] saladIngredients = { "100g couscous", "2 spring onions", "100ml hot low salt vegetable stock (from a cube is fine)" };
         var recipeSaladDTO = getRecipeEntity("10-minute couscous salad",
