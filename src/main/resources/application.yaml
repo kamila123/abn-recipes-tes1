@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: "abn-recipes"
+
+server:
+  servlet:
+    context-path: /api
+
+management:
+  endpoint:
+    info:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health,info,loggers

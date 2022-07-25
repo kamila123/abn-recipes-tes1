@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: "abn-recipes"
+
+server:
+  port: 8082
+  servlet:
+    context-path: /api
+
+management:
+  endpoint:
+    info:
+      enabled: true
+  endpoints:
+    web:
+      base-path: /management
+      exposure:
+        include: health,info,loggers
+
+database:
+  mongodb:
+    url: mongodb://localhost:27017/
+    name: test-recipe
