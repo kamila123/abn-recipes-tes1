@@ -108,14 +108,26 @@ public class RecipeServiceTest {
 
     @Test
     public void whenNoFilterConditionsIsPresent_shouldReturnAllRecipes() {
-        recipeService.filterCondition(null, null, null, null, null);
+        recipeService.filterCondition(null,null, null, null, null, null);
 
         verify(recipeRepository, times(1)).findAll(any(Sort.class));
     }
 
     @Test
+    public void whenNameFilterConditionsIsPresent_shouldReturnRecipesFilteredByCategory() {
+        recipeService.filterCondition("couscous",null, null, null, null, null);
+
+        verify(mongoTemplate, times(1)).find(queryArgumentCaptor.capture(), eq(Recipe.class));
+
+        Query query = queryArgumentCaptor.getValue();
+        String queryString = query.toString();
+        assertThat(queryString).contains("\"name\"");
+        assertThat(queryString).contains("couscous");
+    }
+
+    @Test
     public void whenCategoryFilterConditionsIsPresent_shouldReturnRecipesFilteredByCategory() {
-        recipeService.filterCondition("VEGETARIAN", null, null, null, null);
+        recipeService.filterCondition(null,"VEGETARIAN", null, null, null, null);
 
         verify(mongoTemplate, times(1)).find(queryArgumentCaptor.capture(), eq(Recipe.class));
 
@@ -127,7 +139,7 @@ public class RecipeServiceTest {
 
     @Test
     public void whenServingsFilterConditionsIsPresent_shouldReturnRecipesFilteredByServings() {
-        recipeService.filterCondition(null, 2, null, null, null);
+        recipeService.filterCondition(null,null, 2, null, null, null);
 
         verify(mongoTemplate, times(1)).find(queryArgumentCaptor.capture(), eq(Recipe.class));
 
@@ -140,7 +152,7 @@ public class RecipeServiceTest {
 
     @Test
     public void whenIncludeIngredientsFilterConditionsIsPresent_shouldReturnRecipesFilteredByIngredients() {
-        recipeService.filterCondition(null, null, "onions", null, null);
+        recipeService.filterCondition(null,null, null, "onions", null, null);
 
         verify(mongoTemplate, times(1)).find(queryArgumentCaptor.capture(), eq(Recipe.class));
 
@@ -152,19 +164,19 @@ public class RecipeServiceTest {
 
     @Test
     public void whenExcludeIngredientsFilterConditionsIsPresent_shouldReturnRecipesFilteredByExcludedIngredients() {
-        recipeService.filterCondition(null, null, null, "tomatos", null);
+        recipeService.filterCondition(null,null, null, null, "pepper", null);
 
         verify(mongoTemplate, times(1)).find(queryArgumentCaptor.capture(), eq(Recipe.class));
 
         Query query = queryArgumentCaptor.getValue();
         String queryString = query.toString();
         assertThat(queryString).contains("\"ingredients\"");
-        assertThat(queryString).contains("tomatos");
+        assertThat(queryString).contains("pepper");
     }
 
     @Test
     public void whenInstructionsFilterConditionsIsPresent_shouldReturnRecipesFilteredByInstructions() {
-        recipeService.filterCondition(null, null, null, null, "bowl");
+        recipeService.filterCondition(null,null, null, null, null, "bowl");
 
         verify(mongoTemplate, times(1)).find(queryArgumentCaptor.capture(), eq(Recipe.class));
 

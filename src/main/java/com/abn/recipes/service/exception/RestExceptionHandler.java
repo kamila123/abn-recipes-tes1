@@ -32,7 +32,7 @@ public class RestExceptionHandler {
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     protected ErrorResponse handleInternalServerErrorRequest(Exception ex) {
-        log.error(" Recipes error :", ex);
+        log.error(" abn-recipes error :", ex);
         return new ErrorResponse(ex);
     }
 

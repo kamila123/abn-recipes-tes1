@@ -33,8 +33,6 @@ public class RecipesService {
 
     private final MongoTemplate mongoTemplate;
 
-    private static final ModelMapper modelMapper = new ModelMapper();
-
     public Recipe save(RecipeDTO recipeVO) {
 
         recipeRepository.findByName(recipeVO.getName()).ifPresent(r -> {
@@ -74,15 +72,18 @@ public class RecipesService {
         log.info("Recipe {} successfully deleted", id);
     }
 
-    public List<Recipe> filterCondition(String category, Integer servings, String include, String exclude, String instructions) {
+    public List<Recipe> filterCondition(String name,String category, Integer servings, String include, String exclude, String instructions) {
         final List<Criteria> criteria = new ArrayList<>();
         Sort sortByName = Sort.by(Sort.Direction.ASC, "name");
 
+        if (StringUtils.isNotEmpty(name)) {
+            criteria.add(where("name").regex(name));
+        }
         if (StringUtils.isNotEmpty(include)) {
-            criteria.add(where("ingredients").in(include));
+            criteria.add(where("ingredients").regex(include));
         }
         if (StringUtils.isNotEmpty(exclude)) {
-            criteria.add(where("ingredients").not().in(exclude));
+            criteria.add(where("ingredients").not().regex(exclude));
         }
         if (StringUtils.isNotEmpty(category)) {
             Pattern pattern = Pattern.compile(category, Pattern.CASE_INSENSITIVE);

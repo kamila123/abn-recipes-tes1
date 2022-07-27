@@ -43,12 +43,13 @@ public class RecipeController {
 
     @Operation(method = "Find recipes by filters", summary = "Find recipes")
     @GetMapping
-    public List<RecipeDTO> findRecipes(@RequestParam(required = false) Integer servings,
+    public List<RecipeDTO> findRecipes(@RequestParam(required = false) String name,
+                                       @RequestParam(required = false) Integer servings,
                                        @RequestParam(required = false) String exclude,
                                        @RequestParam(required = false) String include,
                                        @RequestParam(required = false) String category,
                                        @RequestParam(required = false) String instructions) {
-        return recipeService.filterCondition(category, servings, include, exclude, instructions)
+        return recipeService.filterCondition(name, category, servings, include, exclude, instructions)
                 .stream()
                 .map(RecipeDTO::toDTO)
                 .toList();

@@ -14,3 +14,8 @@ management:
     web:
       exposure:
         include: health,info,loggers
+
+database:
+  mongodb:
+    url: mongodb://mongo:27017/
+    name: recipe

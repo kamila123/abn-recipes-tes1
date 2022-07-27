@@ -1,31 +1,40 @@
 package com.abn.recipes.recipe.controller;
 
 import com.abn.recipes.entity.Recipe;
-import com.abn.recipes.recipe.controller.config.BaseTest;
 import com.abn.recipes.repository.RecipeRepository;
-import com.abn.recipes.vo.ErrorResponse;
-import com.abn.recipes.vo.RecipeDTO;
+import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.apache.http.HttpHeaders;
+import org.hamcrest.Matchers;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.*;
 
-public class RecipeControllerTest extends BaseTest {
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+public class RecipeControllerTest {
 
     @Autowired
     private RecipeRepository recipeRepository;
 
+    private static final String API_PATH = "/v1/recipe/";
+
     @BeforeEach
     public void clean() {
         recipeRepository.deleteAll();
+    }
+
+    @BeforeAll
+    public static void before() {
+        RestAssured.baseURI = "http://localhost:8082/api";
     }
 
     @Test
@@ -38,19 +47,15 @@ public class RecipeControllerTest extends BaseTest {
                 .body(recipeDTO)
                 .header(HttpHeaders.CONTENT_TYPE, ContentType.JSON)
                 .when()
-                .post("/v1/recipe")
+                .post(API_PATH)
                 .then()
-                .statusCode(HttpStatus.OK.value());
+                .statusCode(HttpStatus.OK.value())
+                .body("id", Matchers.notNullValue())
+                .body("name", Matchers.is(recipeDTO.getName()))
+                .body("instructions", Matchers.is(recipeDTO.getInstructions()))
+                .body("servings", Matchers.is(recipeDTO.getServings()))
+                .body("ingredients", Matchers.is(recipeDTO.getIngredients()));
 
-        var savedRecipe = recipeRepository.findByName(recipeDTO.getName());
-        assertThat(savedRecipe.isPresent()).isTrue();
-
-        Recipe recipe = savedRecipe.get();
-        assertThat(recipe.getName()).isEqualTo(recipeDTO.getName());
-        assertThat(recipe.getInstructions()).isEqualTo(recipeDTO.getInstructions());
-        assertThat(recipe.getCategory()).isEqualTo(recipeDTO.getCategory());
-        assertThat(recipe.getServings()).isEqualTo(recipeDTO.getServings());
-        assertThat(recipe.getIngredients()).isEqualTo(recipeDTO.getIngredients());
     }
 
     @Test
@@ -63,25 +68,20 @@ public class RecipeControllerTest extends BaseTest {
                 .body(recipeDTO)
                 .header(HttpHeaders.CONTENT_TYPE, ContentType.JSON)
                 .when()
-                .post("/v1/recipe")
+                .post(API_PATH)
                 .then()
-                .statusCode(HttpStatus.OK.value());
-
-        var savedRecipe = recipeRepository.findByName(recipeDTO.getName());
-        assertThat(savedRecipe.isPresent()).isTrue();
-
-        Recipe recipe = savedRecipe.get();
-        assertThat(recipe.getName()).isEqualTo(recipeDTO.getName());
-        assertThat(recipe.getInstructions()).isEqualTo(recipeDTO.getInstructions());
-        assertThat(recipe.getCategory()).isEqualTo(recipeDTO.getCategory());
-        assertThat(recipe.getServings()).isEqualTo(recipeDTO.getServings());
-        assertThat(recipe.getIngredients()).isEqualTo(recipeDTO.getIngredients());
+                .statusCode(HttpStatus.OK.value())
+                .body("id", Matchers.notNullValue())
+                .body("name", Matchers.is(recipeDTO.getName()))
+                .body("instructions", Matchers.is(recipeDTO.getInstructions()))
+                .body("servings", Matchers.is(recipeDTO.getServings()))
+                .body("ingredients", Matchers.is(recipeDTO.getIngredients()));
 
         given()
                 .body(recipeDTO)
                 .header(HttpHeaders.CONTENT_TYPE, ContentType.JSON)
                 .when()
-                .post("/v1/recipe")
+                .post(API_PATH)
                 .then()
                 .statusCode(HttpStatus.CONFLICT.value());
     }
@@ -101,19 +101,15 @@ public class RecipeControllerTest extends BaseTest {
                 .body(recipeDTO)
                 .header(HttpHeaders.CONTENT_TYPE, ContentType.JSON)
                 .when()
-                .put("/v1/recipe/" + recipeSaved.getId())
+                .put(API_PATH + recipeSaved.getId())
                 .then()
-                .statusCode(HttpStatus.OK.value());
+                .statusCode(HttpStatus.OK.value())
+                .body("id", Matchers.notNullValue())
+                .body("name", Matchers.is(recipeDTO.getName()))
+                .body("instructions", Matchers.is(recipeDTO.getInstructions()))
+                .body("servings", Matchers.is(recipeDTO.getServings()))
+                .body("ingredients", Matchers.is(recipeDTO.getIngredients()));
 
-        var maybeRecipe = recipeRepository.findByName(recipeDTO.getName());
-        assertThat(maybeRecipe.isPresent()).isTrue();
-
-        Recipe recipeUpdated = maybeRecipe.get();
-        assertThat(recipeUpdated.getName()).isEqualTo(recipeDTO.getName());
-        assertThat(recipeUpdated.getInstructions()).isEqualTo(recipeDTO.getInstructions());
-        assertThat(recipeUpdated.getCategory()).isEqualTo(recipeDTO.getCategory());
-        assertThat(recipeUpdated.getServings()).isEqualTo(recipeDTO.getServings());
-        assertThat(recipeUpdated.getIngredients()).isEqualTo(recipeDTO.getIngredients());
     }
 
     @Test
@@ -123,21 +119,18 @@ public class RecipeControllerTest extends BaseTest {
         var recipeDTO = getRecipeEntity(                "Quick chilli",
                 "instructions Quick chilli", "VEGETARIAN", 2,chiliIngredients);
 
-        ErrorResponse errorResponse = given()
+        given()
                 .body(recipeDTO)
                 .header(HttpHeaders.CONTENT_TYPE, ContentType.JSON)
                 .when()
-                .put("/v1/recipe/xpto")
+                .put(API_PATH + "xpto")
                 .then()
-                .statusCode(404)
-                .extract()
-                .as(ErrorResponse.class);
+                .statusCode(HttpStatus.NOT_FOUND.value());
 
-        assertThat(errorResponse.message()).isEqualTo("Recipe doesn't exist");
     }
 
     @Test
-    void filterConditions() {
+    void filterConditionsNoFilter() {
         String[] saladIngredients = { "100g couscous", "2 spring onions", "100ml hot low salt vegetable stock (from a cube is fine)" };
         var recipeSaladDTO = getRecipeEntity("10-minute couscous salad",
                 "instructions 10-minute couscous salad", "LOW_CARB", 2,saladIngredients);
@@ -148,17 +141,14 @@ public class RecipeControllerTest extends BaseTest {
 
         recipeRepository.saveAll(List.of(recipeSaladDTO, recipeChiliDTO));
 
-        var recipesArray = given()
+        given()
                 .header(HttpHeaders.CONTENT_TYPE, ContentType.JSON)
                 .when()
-                .get("/v1/recipe")
+                .get(API_PATH)
                 .then()
-                .statusCode(200)
-                .extract()
-                .as(RecipeDTO[].class);
+                .statusCode(HttpStatus.OK.value())
+                .body("$", hasSize(2));
 
-        var recipes = Arrays.asList(recipesArray);
-        assertThat(recipes.size()).isEqualTo(2);
     }
 
     @Test
@@ -172,9 +162,9 @@ public class RecipeControllerTest extends BaseTest {
         given()
                 .header(HttpHeaders.CONTENT_TYPE, ContentType.JSON)
                 .when()
-                .delete("/v1/recipe/" + recipeSaved.getId())
+                .delete(API_PATH + recipeSaved.getId())
                 .then()
-                .statusCode(200);
+                .statusCode(HttpStatus.OK.value());
 
         var allRecipes = recipeRepository.findAll();
         assertThat(allRecipes.isEmpty()).isTrue();
@@ -185,9 +175,32 @@ public class RecipeControllerTest extends BaseTest {
        given()
                 .header(HttpHeaders.CONTENT_TYPE, ContentType.JSON)
                 .when()
-                .delete("/v1/recipe/" + "xpto")
+                .delete(API_PATH + "xpto")
                 .then()
-                .statusCode(404);
+                .statusCode(HttpStatus.NOT_FOUND.value());
+    }
+
+    @Test
+    void filterConditionName() {
+        String[] saladIngredients = { "100g couscous", "2 spring onions", "100ml hot low salt vegetable stock (from a cube is fine)" };
+        var recipeSaladDTO = getRecipeEntity("10-minute couscous salad",
+                "instructions 10-minute couscous salad", "VEGETARIAN", 2,saladIngredients);
+
+        String[] chiliIngredients = { "100g chorizo , sliced", "400g can kidney beans" };
+        var recipeChiliDTO = getRecipeEntity("Quick chilli",
+                "instructions Quick chilli", "LOW_CARB", 2,chiliIngredients);
+
+        recipeRepository.saveAll(List.of(recipeChiliDTO, recipeSaladDTO));
+
+        given()
+                .header(HttpHeaders.CONTENT_TYPE, ContentType.JSON)
+                .when()
+                .get(API_PATH + "?name=Quick chilli")
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .body("$", hasSize(1))
+                .body("" , hasItems(hasEntry("name", "Quick chilli")));
+
     }
 
     @Test
@@ -202,21 +215,15 @@ public class RecipeControllerTest extends BaseTest {
 
         recipeRepository.saveAll(List.of(recipeChiliDTO, recipeSaladDTO));
 
-        var recipesArray = given()
+         given()
                 .header(HttpHeaders.CONTENT_TYPE, ContentType.JSON)
                 .when()
-                .get("/v1/recipe?category=VEGETARIAN")
+                .get( API_PATH + "?category=VEGETARIAN")
                 .then()
-                .statusCode(200)
-                .extract()
-                .as(RecipeDTO[].class);
+                .statusCode(HttpStatus.OK.value())
+                .body("$", hasSize(1))
+                .body("" , hasItems(hasEntry("category", "VEGETARIAN")));
 
-        var recipes = Arrays.asList(recipesArray);
-        assertThat(recipes.size()).isEqualTo(1);
-
-        RecipeDTO recipeFound = recipes.get(0);
-        assertThat(recipeFound.getCategory()).isEqualTo(recipeSaladDTO.getCategory());
-        assertThat(recipeFound.getName()).isEqualTo(recipeSaladDTO.getName());
     }
 
     @Test
@@ -231,21 +238,14 @@ public class RecipeControllerTest extends BaseTest {
 
         recipeRepository.saveAll(List.of(recipeChiliDTO, recipeSaladDTO));
 
-        var recipesArray = given()
+        given()
                 .header(HttpHeaders.CONTENT_TYPE, ContentType.JSON)
                 .when()
-                .get("/v1/recipe?category=vegetarian")
+                .get(API_PATH + "?category=low_carb")
                 .then()
-                .statusCode(200)
-                .extract()
-                .as(RecipeDTO[].class);
-
-        var recipes = Arrays.asList(recipesArray);
-        assertThat(recipes.size()).isEqualTo(1);
-
-        RecipeDTO recipeFound = recipes.get(0);
-        assertThat(recipeFound.getCategory()).isEqualTo(recipeSaladDTO.getCategory());
-        assertThat(recipeFound.getName()).isEqualTo(recipeSaladDTO.getName());
+                .statusCode(HttpStatus.OK.value())
+                .body("$", hasSize(1))
+                .body("" , hasItems(hasEntry("category", "LOW_CARB")));
     }
 
     @Test
@@ -260,20 +260,14 @@ public class RecipeControllerTest extends BaseTest {
 
         recipeRepository.saveAll(List.of(recipeChiliDTO, recipeSaladDTO));
 
-        var recipesArray = given()
+        given()
                 .header(HttpHeaders.CONTENT_TYPE, ContentType.JSON)
                 .when()
-                .get("/v1/recipe?instructions=couscous")
+                .get(API_PATH + "?instructions=couscous")
                 .then()
-                .statusCode(200)
-                .extract()
-                .as(RecipeDTO[].class);
-
-        var recipes = Arrays.asList(recipesArray);
-        assertThat(recipes.size()).isEqualTo(1);
-
-        RecipeDTO recipeFound = recipes.get(0);
-        assertThat(recipeFound.getInstructions()).contains("couscous");
+                .statusCode(HttpStatus.OK.value())
+                .body("$", hasSize(1))
+                .body("" , hasItems(hasEntry("instructions", "instructions 10-minute couscous salad")));
     }
 
     @Test
@@ -288,21 +282,15 @@ public class RecipeControllerTest extends BaseTest {
 
         recipeRepository.saveAll(List.of(recipeChiliDTO, recipeSaladDTO));
 
-        var recipesArray = given()
+        given()
                 .header(HttpHeaders.CONTENT_TYPE, ContentType.JSON)
                 .when()
-                .get("/v1/recipe?servings=2")
+                .get(API_PATH + "?servings=2")
                 .then()
-                .statusCode(200)
-                .extract()
-                .as(RecipeDTO[].class);
+                .statusCode(HttpStatus.OK.value())
+                .body("$", hasSize(1))
+                .body("" , hasItems(hasEntry("servings", 2)));
 
-        var recipes = Arrays.asList(recipesArray);
-        assertThat(recipes.size()).isEqualTo(1);
-
-        RecipeDTO recipeFound = recipes.get(0);
-        assertThat(recipeFound.getServings()).isEqualTo(2);
-        assertThat(recipeFound.getName()).isEqualTo(recipeSaladDTO.getName());
     }
 
     @Test
@@ -317,21 +305,14 @@ public class RecipeControllerTest extends BaseTest {
 
         recipeRepository.saveAll(List.of(recipeChiliDTO, recipeSaladDTO));
 
-        var recipesArray = given()
+        given()
                 .header(HttpHeaders.CONTENT_TYPE, ContentType.JSON)
                 .when()
-                .get("/v1/recipe?include=100g couscous")
+                .get(API_PATH + "?include=couscous")
                 .then()
-                .statusCode(200)
-                .extract()
-                .as(RecipeDTO[].class);
-
-        var recipes = Arrays.asList(recipesArray);
-        assertThat(recipes.size()).isEqualTo(1);
-
-        RecipeDTO recipeFound = recipes.get(0);
-        assertThat(recipeFound.getIngredients()).contains("100g couscous");
-        assertThat(recipeFound.getName()).isEqualTo(recipeSaladDTO.getName());
+                .statusCode(HttpStatus.OK.value())
+                .body("$", hasSize(1))
+                .body("[0].ingredients" , hasItems("100g couscous"));
     }
 
     @Test
@@ -346,37 +327,27 @@ public class RecipeControllerTest extends BaseTest {
 
         recipeRepository.saveAll(List.of(recipeChiliDTO, recipeSaladDTO));
 
-        var recipesArray = given()
+        given()
                 .header(HttpHeaders.CONTENT_TYPE, ContentType.JSON)
                 .when()
-                .get("/v1/recipe?exclude=100g chorizo")
+                .get(API_PATH + "?exclude=couscous")
                 .then()
-                .statusCode(200)
-                .extract()
-                .as(RecipeDTO[].class);
+                .statusCode(HttpStatus.OK.value())
+                .body("$", hasSize(1))
+                .body("[0].ingredients" , Matchers.not("100g couscous"));
 
-        var recipes = Arrays.asList(recipesArray);
-        assertThat(recipes.size()).isEqualTo(1);
-
-        RecipeDTO recipeFound = recipes.get(0);
-        assertThat(recipeFound.getIngredients()).doesNotContain("100g chorizo");
-        assertThat(recipeFound.getName()).isEqualTo(recipeSaladDTO.getName());
     }
 
 
     @Test
     void filterConditionInvalid() {
-        var recipesArray = given()
+        given()
                 .header(HttpHeaders.CONTENT_TYPE, ContentType.JSON)
                 .when()
-                .get("/v1/recipe?instructionn=1")
+                .get(API_PATH + "?instructionn=1")
                 .then()
-                .statusCode(200)
-                .extract()
-                .as(RecipeDTO[].class);
-
-        var recipes = Arrays.asList(recipesArray);
-        assertThat(recipes.size()).isEqualTo(0);
+                .statusCode(HttpStatus.OK.value())
+                .body("$", hasSize(0));
     }
 
 
@@ -391,16 +362,23 @@ public class RecipeControllerTest extends BaseTest {
                 "instructions Quick chilli", "LOW_CARB", 6,chiliIngredients);
 
         recipeRepository.saveAll(List.of(recipeChiliDTO, recipeSaladDTO));
-        var recipesArray = given()
+
+        given()
                 .header(HttpHeaders.CONTENT_TYPE, ContentType.JSON)
                 .when()
-                .get("/v1/recipe")
+                .get(API_PATH )
                 .then()
-                .statusCode(200)
-                .extract()
-                .as(RecipeDTO[].class);
+                .statusCode(HttpStatus.OK.value())
+                .body("$", hasSize(2));
+    }
 
-        var recipes = Arrays.asList(recipesArray);
-        assertThat(recipes.size()).isEqualTo(2);
+    public Recipe getRecipeEntity(String name, String instructions, String category, Integer servings, String[] ingredients) {
+        return Recipe.builder()
+                .name(name)
+                .instructions(instructions)
+                .category(category)
+                .servings(servings)
+                .ingredients(List.of(ingredients))
+                .build();
     }
 }
