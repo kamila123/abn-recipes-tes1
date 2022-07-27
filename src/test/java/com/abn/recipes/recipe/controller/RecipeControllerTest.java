@@ -194,8 +194,9 @@ public class RecipeControllerTest {
 
         given()
                 .header(HttpHeaders.CONTENT_TYPE, ContentType.JSON)
+                .param("name","Quick chilli")
                 .when()
-                .get(API_PATH + "?name=Quick chilli")
+                .get(API_PATH)
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .body("$", hasSize(1))
@@ -217,8 +218,9 @@ public class RecipeControllerTest {
 
          given()
                 .header(HttpHeaders.CONTENT_TYPE, ContentType.JSON)
+                 .param("category", "VEGETARIAN")
                 .when()
-                .get( API_PATH + "?category=VEGETARIAN")
+                .get( API_PATH)
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .body("$", hasSize(1))
@@ -240,8 +242,9 @@ public class RecipeControllerTest {
 
         given()
                 .header(HttpHeaders.CONTENT_TYPE, ContentType.JSON)
+                .param("category","low_carb")
                 .when()
-                .get(API_PATH + "?category=low_carb")
+                .get(API_PATH)
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .body("$", hasSize(1))
@@ -262,8 +265,9 @@ public class RecipeControllerTest {
 
         given()
                 .header(HttpHeaders.CONTENT_TYPE, ContentType.JSON)
+                .param("instructions", "couscous")
                 .when()
-                .get(API_PATH + "?instructions=couscous")
+                .get(API_PATH)
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .body("$", hasSize(1))
@@ -284,8 +288,9 @@ public class RecipeControllerTest {
 
         given()
                 .header(HttpHeaders.CONTENT_TYPE, ContentType.JSON)
+                .param("servings", "2")
                 .when()
-                .get(API_PATH + "?servings=2")
+                .get(API_PATH )
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .body("$", hasSize(1))
@@ -307,8 +312,9 @@ public class RecipeControllerTest {
 
         given()
                 .header(HttpHeaders.CONTENT_TYPE, ContentType.JSON)
+                .param("include", "couscous")
                 .when()
-                .get(API_PATH + "?include=couscous")
+                .get(API_PATH )
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .body("$", hasSize(1))
@@ -329,8 +335,9 @@ public class RecipeControllerTest {
 
         given()
                 .header(HttpHeaders.CONTENT_TYPE, ContentType.JSON)
+                .param("exclude","couscous")
                 .when()
-                .get(API_PATH + "?exclude=couscous")
+                .get(API_PATH )
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .body("$", hasSize(1))
@@ -343,8 +350,9 @@ public class RecipeControllerTest {
     void filterConditionInvalid() {
         given()
                 .header(HttpHeaders.CONTENT_TYPE, ContentType.JSON)
+                .param("instructionn", "1")
                 .when()
-                .get(API_PATH + "?instructionn=1")
+                .get(API_PATH )
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .body("$", hasSize(0));
