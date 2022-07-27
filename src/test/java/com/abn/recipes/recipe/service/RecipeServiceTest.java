@@ -5,7 +5,7 @@ import com.abn.recipes.repository.RecipeRepository;
 import com.abn.recipes.service.RecipesService;
 import com.abn.recipes.service.exception.ResourceAlreadyExistException;
 import com.abn.recipes.service.exception.ResourceNotFoundException;
-import com.abn.recipes.vo.RecipeDTO;
+import com.abn.recipes.dto.RecipeDTO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;

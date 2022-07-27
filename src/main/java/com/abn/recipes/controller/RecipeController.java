@@ -2,7 +2,7 @@ package com.abn.recipes.controller;
 
 import com.abn.recipes.entity.Recipe;
 import com.abn.recipes.service.RecipesService;
-import com.abn.recipes.vo.RecipeDTO;
+import com.abn.recipes.dto.RecipeDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

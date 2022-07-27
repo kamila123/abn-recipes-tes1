@@ -1,4 +1,4 @@
-package com.abn.recipes.vo;
+package com.abn.recipes.dto;
 
 import lombok.Builder;
 
